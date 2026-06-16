@@ -466,8 +466,20 @@ body.light ::-webkit-scrollbar-thumb{background:rgba(108,58,255,0.2);}
     </div>
   </div>
 
-  <!-- PRICE TICKER -->
-  <div class="ticker-scroll" id="tickerScroll"></div>
+  <!-- PRICE TICKER + REFRESH -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+    <div class="ticker-scroll" id="tickerScroll" style="flex:1;margin-bottom:0;"></div>
+    <button onclick="refreshPrices()" id="refreshBtn" style="
+      flex-shrink:0;
+      background:var(--bg2);border:1px solid var(--border);
+      border-radius:10px;padding:8px 14px;
+      color:var(--neon);cursor:pointer;
+      font-family:'Space Mono',monospace;font-size:11px;
+      font-weight:700;letter-spacing:1px;
+      transition:all 0.2s;white-space:nowrap;
+    ">⟳ REFRESH</button>
+  </div>
+  <div style="font-size:9px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:16px;" id="lastRefresh">Fetching prices...</div>
 
   <!-- CASH RESERVE / DRY POWDER -->
   <div class="cash-wrap">
@@ -848,7 +860,7 @@ body.light ::-webkit-scrollbar-thumb{background:rgba(108,58,255,0.2);}
 
     <!-- GROWTH PROJECTION -->
     <div class="card">
-      <div class="card-title">◈ 10-Year Wealth Projection</div>
+      <div class="card-title">◈ 18-Year Wealth Projection</div>
       <p style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:14px;">If you reinvest all dividends (DRIP)</p>
       <div id="rotGrowth"></div>
     </div>
@@ -933,6 +945,17 @@ function load(){
   try{const s=localStorage.getItem(SK);if(s)S=JSON.parse(s);}catch(e){}
   if(!S.options)S.options=[];
   if(!S.assets||!S.assets.length)S.assets=[{ticker:'FSOL',name:'Fidelity Solana Fund',type:'crypto-etf'}];
+  // Auto-inject contract tokens if missing
+  const defaults=[
+    {ticker:'DMT-NAT',name:'DMT-NAT (ERC20 · Ethereum)',type:'crypto'},
+    {ticker:'PTGC',name:'The Grays Currency (PulseChain)',type:'crypto'},
+    {ticker:'OVPP',name:'OpenVPP (Base Chain)',type:'crypto'},
+    {ticker:'PRVX',name:'ProveX (PulseChain)',type:'crypto'}
+  ];
+  defaults.forEach(d=>{
+    if(!S.assets.find(a=>a.ticker===d.ticker)) S.assets.push(d);
+  });
+  save();
 }
 function save(){localStorage.setItem(SK,JSON.stringify(S));}
 
@@ -942,19 +965,40 @@ const PM={
   IONQ:68.57,BMNR:18.23,RDZN:1.87,FDTX:58.35,
   CRDO:206.11,IBIT:42,BTC:104000,ETH:3800,SOL:79,
   SPY:580,QQQ:490,VOO:520,NVDA:135,MU:115,
-  MSTR:420,ETHA:28,FBTC:105
+  MSTR:420,ETHA:28,FBTC:105,
+  'DMT-NAT':0.00009666,
+  'PTGC':0.00007433,
+  'OVPP':0.0071,
+  'PRVX':0.00006938
 };
 
 async function fetchPrices(){
-  const tickers=S.assets.map(a=>a.ticker);
+  const tickers = S.assets.map(a=>a.ticker);
   await Promise.all(tickers.map(async t=>{
-    try{
-      const url=`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${t}?interval=1d&range=1d`)}`;
-      const r=await fetch(url);const d=await r.json();
-      const p=d?.chart?.result?.[0]?.meta?.regularMarketPrice;
-      if(p&&p>0)S.prices[t]=p;
-      else if(PM[t])S.prices[t]=S.prices[t]||PM[t];
-    }catch(e){if(PM[t])S.prices[t]=S.prices[t]||PM[t];}
+    // Contract tokens → DexScreener
+    if(CONTRACT_TOKENS[t]){
+      const p = await fetchContractPrice(t);
+      if(p&&p>0){ S.prices[t]=p; return; }
+      // fallback to PM
+      if(PM[t]) S.prices[t]=S.prices[t]||PM[t];
+      return;
+    }
+    // Regular tickers → Yahoo Finance with multiple proxies
+    const proxies=[
+      'https://api.allorigins.win/raw?url=',
+      'https://corsproxy.io/?',
+    ];
+    const yUrl=`https://query1.finance.yahoo.com/v8/finance/chart/${t}?interval=1d&range=1d`;
+    let fetched=false;
+    for(const proxy of proxies){
+      try{
+        const r=await fetch(proxy+encodeURIComponent(yUrl),{signal:AbortSignal.timeout(5000)});
+        const d=await r.json();
+        const p=d?.chart?.result?.[0]?.meta?.regularMarketPrice;
+        if(p&&p>0){S.prices[t]=p;fetched=true;break;}
+      }catch(e){continue;}
+    }
+    if(!fetched&&PM[t]) S.prices[t]=S.prices[t]||PM[t];
   }));
   renderTicker();renderHero();renderHoldings();save();
 }
@@ -963,29 +1007,122 @@ function renderTicker(){
   const now=new Date().toLocaleTimeString();
   document.getElementById('tickerScroll').innerHTML=S.assets.map(a=>{
     const p=S.prices[a.ticker];
-    return `<div class="t-chip"><div class="t-ticker">${a.ticker}</div><div class="t-price">$${p?fmt(p):'—'}</div><div class="t-time">${now}</div></div>`;
+    const isTiny = p && p < 0.01;
+    const displayPrice = p ? (isTiny ? '$'+p.toFixed(8) : '$'+fmt(p)) : '—';
+    return `<div class="t-chip">
+      <div class="t-ticker">${a.ticker}</div>
+      <div class="t-price" style="font-size:${isTiny?'10px':'14px'};">${displayPrice}</div>
+      <div class="t-time">${now}</div>
+    </div>`;
   }).join('');
+  const status = document.getElementById('lastRefresh');
+  if(status) status.textContent = '✓ Last refreshed at ' + now;
+}
+
+// ─── CONTRACT TOKENS (DexScreener) ───────────────────────────────
+const CONTRACT_TOKENS = {
+  'DMT-NAT': {
+    address: '0x249130F5E2dD4CF278180c0dF8273f3592Ad1247',
+    chain:   'ethereum',
+    holdings: 50000000000,
+    name:    'DMT-NAT (ERC20 · Ethereum)'
+  },
+  'PTGC': {
+    address: '0xCb5a0Be7BdFA23898d71E1468BF2b29c8e9785b4',
+    chain:   'pulsechain',
+    holdings: 50000000,
+    name:    'The Grays Currency (PulseChain)'
+  },
+  'OVPP': {
+    address: '0x8C0d3ADCF8Ce094E1aE437557Ec90A6374dC9BDD',
+    chain:   'base',
+    holdings: 0,
+    name:    'OpenVPP (Base Chain)'
+  },
+  'PRVX': {
+    address: '0xF6f8Db0aBa00007681F8fAF16A0FDa1c9B030b11',
+    chain:   'pulsechain',
+    holdings: 0,
+    name:    'ProveX (PulseChain)'
+  }
+};
+
+async function fetchContractPrice(ticker){
+  const token = CONTRACT_TOKENS[ticker];
+  if(!token) return null;
+  const proxies = [
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.io/?',
+  ];
+  const dexUrl = `https://api.dexscreener.com/latest/dex/tokens/${token.address}`;
+  for(const proxy of proxies){
+    try{
+      const res = await fetch(proxy + encodeURIComponent(dexUrl), {signal: AbortSignal.timeout(5000)});
+      const data = await res.json();
+      const pairs = data?.pairs;
+      if(!pairs||!pairs.length) continue;
+      const best = pairs.sort((a,b)=>(b.liquidity?.usd||0)-(a.liquidity?.usd||0))[0];
+      const price = parseFloat(best?.priceUsd||0);
+      if(price > 0) return price;
+    }catch(e){ continue; }
+  }
+  return null;
 }
 
 async function fetchCryptoPrices(){
-  const coins={BTC:'bitcoin',ETH:'ethereum',SOL:'solana'};
-  const ids=Object.values(coins).join(',');
-  try{
-    const url=`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`)}`;
-    const res=await fetch(url);
-    const data=await res.json();
-    if(data?.bitcoin?.usd) document.getElementById('cpBTC').textContent='$'+fmt(data.bitcoin.usd);
-    if(data?.ethereum?.usd) document.getElementById('cpETH').textContent='$'+fmt(data.ethereum.usd);
-    if(data?.solana?.usd) document.getElementById('cpSOL').textContent='$'+fmt(data.solana.usd);
-  }catch(e){
-    // fallback to price map
-    document.getElementById('cpBTC').textContent='$'+fmt(PM['BTC']);
-    document.getElementById('cpETH').textContent='$'+fmt(PM['ETH']);
-    document.getElementById('cpSOL').textContent='$'+fmt(PM['SOL']);
+  const coins = {BTC:'bitcoin', ETH:'ethereum', SOL:'solana'};
+  const ids = Object.values(coins).join(',');
+  const proxies = [
+    'https://api.allorigins.win/raw?url=',
+    'https://corsproxy.io/?',
+    'https://api.codetabs.com/v1/proxy?quest=',
+  ];
+  const cgUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`;
+
+  let fetched = false;
+  for(const proxy of proxies){
+    try{
+      const res = await fetch(proxy + encodeURIComponent(cgUrl), {signal: AbortSignal.timeout(6000)});
+      const data = await res.json();
+      if(data?.bitcoin?.usd){
+        document.getElementById('cpBTC').textContent = '$' + fmt(data.bitcoin.usd);
+        document.getElementById('cpETH').textContent = '$' + fmt(data.ethereum.usd);
+        document.getElementById('cpSOL').textContent = '$' + fmt(data.solana.usd);
+        // Update SOL price in PM for FSOL ratio calc
+        PM['SOL'] = data.solana.usd;
+        PM['BTC'] = data.bitcoin.usd;
+        PM['ETH'] = data.ethereum.usd;
+        fetched = true;
+        break;
+      }
+    }catch(e){ continue; }
+  }
+  if(!fetched){
+    document.getElementById('cpBTC').textContent = '$' + fmt(PM['BTC']);
+    document.getElementById('cpETH').textContent = '$' + fmt(PM['ETH']);
+    document.getElementById('cpSOL').textContent = '$' + fmt(PM['SOL']);
   }
 }
 
-// ─── HALVING ─────────────────────────────────────────────────────
+// ─── REFRESH BUTTON ──────────────────────────────────────────────
+async function refreshPrices(){
+  const btn = document.getElementById('refreshBtn');
+  const status = document.getElementById('lastRefresh');
+  if(btn){
+    btn.textContent = '⟳ LOADING...';
+    btn.style.opacity = '0.6';
+    btn.disabled = true;
+  }
+  if(status) status.textContent = 'Fetching live prices...';
+  await Promise.all([fetchPrices(), fetchCryptoPrices()]);
+  if(btn){
+    btn.textContent = '⟳ REFRESH';
+    btn.style.opacity = '1';
+    btn.disabled = false;
+  }
+  const now = new Date().toLocaleTimeString();
+  if(status) status.textContent = '✓ Last refreshed at ' + now;
+}
 const HV=new Date('2028-04-20T00:00:00Z');
 function tickHV(){
   const d=HV-new Date();
@@ -1105,7 +1242,7 @@ function renderRotation(){
   document.getElementById('rotTotalMonthly').textContent='$'+fmt(totalMonthly);
   document.getElementById('rotTotalAnnual').textContent='$'+fmt(totalMonthly*12)+'/year';
   const growthRows=[];
-  for(let y=1;y<=10;y++){let nb=0;ROT_ASSETS.filter(a=>a.pct>0).forEach(a=>{nb+=afterTax*(a.pct/100)*Math.pow(1+(a.growth+a.yield),y);});growthRows.push(`<tr><td style="font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);">Year ${y}</td><td style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:${nb>afterTax*2?'var(--neon)':nb>afterTax?'var(--green2)':'#fff'};">$${fmt(nb)}</td><td style="font-size:12px;color:${nb>afterTax?'var(--green2)':'var(--red2)'};font-family:'Space Mono',monospace;">+${(((nb-afterTax)/afterTax)*100).toFixed(0)}%</td><td style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">$${fmt((nb-afterTax)/y/12)}/mo avg</td></tr>`);}
+  for(let y=1;y<=18;y++){let nb=0;ROT_ASSETS.filter(a=>a.pct>0).forEach(a=>{nb+=afterTax*(a.pct/100)*Math.pow(1+(a.growth+a.divYield),y);});growthRows.push(`<tr><td style="font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);">Year ${y}</td><td style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:${nb>afterTax*3?'var(--neon)':nb>afterTax*2?'var(--green2)':nb>afterTax?'#fff':'var(--red2)'};">$${fmt(nb)}</td><td style="font-size:12px;color:${nb>afterTax?'var(--green2)':'var(--red2)'};font-family:'Space Mono',monospace;">+${(((nb-afterTax)/afterTax)*100).toFixed(0)}%</td><td style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">$${fmt((nb-afterTax)/y/12)}/mo avg</td></tr>`);}
   document.getElementById('rotGrowth').innerHTML=`<div style="overflow-x:auto;"><table class="tbl"><thead><tr><th>Year</th><th>Portfolio Value</th><th>Total Return</th><th>Monthly Gain</th></tr></thead><tbody>${growthRows.join('')}</tbody></table></div>`;
   saveRotation();
 }
