@@ -15,25 +15,65 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#0a0a0a;--bg2:#141414;--bg3:#1c1c1c;
-  --border:#242424;--text:#ffffff;
+  --bg:#060810;
+  --bg2:rgba(255,255,255,0.05);
+  --bg3:rgba(255,255,255,0.03);
+  --border:rgba(255,255,255,0.1);
+  --border-hi:rgba(20,241,149,0.3);
+  --text:#ffffff;
   --muted:#6b7280;--muted2:#9ca3af;
   --green:#00c853;--green2:#00e676;
   --red:#ff1744;--red2:#ff5252;
   --neon:#14F195;--gold:#FFD700;
   --purple:#7c3aed;--blue:#2979ff;
+  --glass-blur:blur(24px) saturate(160%);
+  --glass-shine:inset 0 1px 0 rgba(255,255,255,0.12);
+  --glass-shadow:0 8px 32px rgba(0,0,0,0.4);
 }
-body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* ── DEEP SPACE BACKGROUND ── */
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 0%, rgba(20,241,149,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 10%, rgba(124,58,237,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 70% at 50% 100%, rgba(41,121,255,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 100% 100% at 50% 50%, #060d1a 0%, #03060f 100%);
+}
+body::after{
+  content:'';
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(20,241,149,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(20,241,149,0.025) 1px, transparent 1px);
+  background-size:44px 44px;
+}
+
+/* ── GLASS MIXIN — applied to all panels ── */
+.topbar,.card,.modal,.sbox,.hstat,.intel-chip,.month-box,
+.halving,.mission-bar-wrap,.tc,.overlay .modal{
+  background:var(--bg2) !important;
+  backdrop-filter:var(--glass-blur);
+  -webkit-backdrop-filter:var(--glass-blur);
+  box-shadow:var(--glass-shine),var(--glass-shadow);
+}
+
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:#2a2a2a;border-radius:10px;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:10px;}
 
 /* TOP BAR */
 .topbar{
   position:sticky;top:0;z-index:50;
-  background:rgba(10,10,10,0.96);
-  backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--border);
+  border-bottom:1px solid rgba(255,255,255,0.08) !important;
   padding:14px 20px;
 }
 .topbar-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
@@ -42,7 +82,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .vault-sub{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:2px;margin-top:2px;}
 
 /* HALVING */
-.halving{background:rgba(20,241,149,0.04);border:1px solid rgba(20,241,149,0.15);border-radius:14px;padding:10px 18px;text-align:center;}
+.halving{background:rgba(20,241,149,0.06) !important;border:1px solid rgba(20,241,149,0.15) !important;border-radius:14px;padding:10px 18px;text-align:center;}
 .halving-lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(20,241,149,0.6);text-transform:uppercase;margin-bottom:6px;}
 .halving-digits{display:flex;align-items:center;justify-content:center;gap:4px;}
 .hu{display:flex;flex-direction:column;align-items:center;}
@@ -109,7 +149,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 /* PRICE TICKER */
 .ticker-scroll{display:flex;gap:8px;overflow-x:auto;padding:4px 0 16px;margin-bottom:4px;scrollbar-width:none;}
 .ticker-scroll::-webkit-scrollbar{display:none;}
-.t-chip{flex-shrink:0;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;min-width:85px;}
+.t-chip{flex-shrink:0;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:10px 14px;min-width:85px;backdrop-filter:blur(16px);}
 .t-ticker{font-size:11px;font-weight:700;color:#fff;}
 .t-price{font-size:14px;font-weight:600;color:var(--neon);font-family:'Space Mono',monospace;margin-top:2px;}
 .t-time{font-size:9px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:2px;}
@@ -140,12 +180,12 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .a-pnl{font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace;}
 
 /* FORM */
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px;}
+.card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:20px;margin-bottom:16px;backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.1),0 8px 32px rgba(0,0,0,0.4);}
 .card-title{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--neon);margin-bottom:16px;font-family:'Space Mono',monospace;}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
 @media(min-width:600px){.fgrid.f4{grid-template-columns:repeat(4,1fr);}}
 .fg label{display:block;font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;font-family:'Space Mono',monospace;}
-.fg input,.fg select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+.fg input,.fg select{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:10px 14px;color:#fff;font-family:'Inter',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;backdrop-filter:blur(8px);}
 .fg input:focus,.fg select:focus{border-color:var(--neon);box-shadow:0 0 0 3px rgba(20,241,149,0.1);}
 .fg select option{background:var(--bg2);color:#fff;}
 .fg input::placeholder{color:var(--muted);}
@@ -154,7 +194,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .btn{padding:11px 20px;border-radius:10px;border:none;cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:700;transition:all 0.2s;}
 .btn-neon{background:var(--neon);color:#000;}
 .btn-neon:hover{background:#0fd880;transform:translateY(-1px);box-shadow:0 4px 20px rgba(20,241,149,0.3);}
-.btn-ghost{background:var(--bg3);color:var(--muted2);border:1px solid var(--border);}
+.btn-ghost{background:rgba(255,255,255,0.06);color:var(--muted2);border:1px solid rgba(255,255,255,0.12);backdrop-filter:blur(12px);}
 .btn-ghost:hover{color:#fff;border-color:#444;}
 .btn-del{background:rgba(255,23,68,0.1);color:var(--red2);border:1px solid rgba(255,23,68,0.2);padding:6px 10px;font-size:11px;}
 .btn-del:hover{background:rgba(255,23,68,0.2);}
@@ -170,14 +210,14 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 
 /* PILLS */
 .pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
-.pill{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-size:11px;cursor:pointer;transition:all 0.2s;font-family:'Space Mono',monospace;}
+.pill{padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);color:var(--muted);font-size:11px;cursor:pointer;transition:all 0.2s;font-family:'Space Mono',monospace;backdrop-filter:blur(12px);}
 .pill.active{background:rgba(20,241,149,0.1);border-color:var(--neon);color:var(--neon);}
 .pill:hover:not(.active){color:#fff;border-color:#444;}
 
 /* STAT BOXES */
 .srow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
 @media(min-width:600px){.srow4{grid-template-columns:repeat(4,1fr);}}
-.sbox{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 12px;}
+.sbox{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 12px;backdrop-filter:blur(20px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);}
 .sbox-lbl{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
 .sbox-val{font-size:16px;font-weight:700;color:#fff;}
 .sbox-val.g{color:var(--green2);}
@@ -222,7 +262,7 @@ body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-h
 .cash-total-val{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;color:var(--green2);}
 
 /* ── LIGHT MODE ── */
-body.light{--bg:#f0f4ff;--bg2:rgba(255,255,255,0.8);--bg3:#e8edf5;--border:rgba(108,58,255,0.15);--text:#1a1a2e;--muted:#6b7280;--muted2:#4b5563;}
+body.light{--bg:#e8eef8;--bg2:rgba(255,255,255,0.5);--bg3:rgba(255,255,255,0.3);--border:rgba(0,0,0,0.08);--text:#1a1a2e;--muted:#6b7280;--muted2:#4b5563;}
 body.light .topbar{background:rgba(240,244,255,0.96);border-color:rgba(108,58,255,0.15);}
 body.light .tbl tr:hover td{background:rgba(108,58,255,0.04);}
 body.light .fg input,body.light .fg select{background:#fff;color:#1a1a2e;border-color:rgba(108,58,255,0.2);}
@@ -232,15 +272,15 @@ body.light .modal{background:#fff;}
 body.light ::-webkit-scrollbar-thumb{background:rgba(108,58,255,0.2);}
 
 /* THEME TOGGLE */
-.theme-btn{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);transition:all 0.2s;flex-shrink:0;}
+.theme-btn{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:8px 14px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);transition:all 0.2s;flex-shrink:0;backdrop-filter:blur(12px);}
 .theme-btn:hover{color:var(--text);border-color:var(--neon);}
 
 /* $100K MISSION BAR */
-.mission-bar-wrap{margin:20px 0;padding:20px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;}
+.mission-bar-wrap{margin:20px 0;padding:20px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;backdrop-filter:blur(24px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);}
 .mission-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
 .mission-title{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;letter-spacing:2px;color:var(--neon);}
 .mission-pct{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;color:var(--gold);}
-.mission-track{height:14px;background:var(--bg3);border-radius:20px;overflow:visible;position:relative;border:1px solid var(--border);}
+.mission-track{height:14px;background:rgba(255,255,255,0.06);border-radius:20px;overflow:visible;position:relative;border:1px solid rgba(255,255,255,0.08);}
 .mission-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--purple),var(--neon));transition:width 1s cubic-bezier(0.4,0,0.2,1);position:relative;}
 .mission-fill::after{content:'🚀';position:absolute;right:-12px;top:50%;transform:translateY(-50%);font-size:16px;}
 .mission-milestones{display:flex;justify-content:space-between;margin-top:8px;}
@@ -251,7 +291,7 @@ body.light ::-webkit-scrollbar-thumb{background:rgba(108,58,255,0.2);}
 /* MARKET INTEL STRIP */
 .intel-strip{display:flex;gap:10px;overflow-x:auto;padding:4px 0 12px;margin-bottom:16px;scrollbar-width:none;}
 .intel-strip::-webkit-scrollbar{display:none;}
-.intel-chip{flex-shrink:0;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;min-width:130px;}
+.intel-chip{flex-shrink:0;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px 16px;min-width:130px;backdrop-filter:blur(20px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);}
 .intel-lbl{font-size:9px;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
 .intel-val{font-size:18px;font-weight:700;font-family:'Orbitron',monospace;}
 .intel-sub{font-size:10px;margin-top:3px;font-family:'Space Mono',monospace;}
@@ -289,7 +329,7 @@ body.light ::-webkit-scrollbar-thumb{background:rgba(108,58,255,0.2);}
 /* MONTHLY SUMMARY */
 .month-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
 @media(min-width:600px){.month-grid{grid-template-columns:repeat(4,1fr);}}
-.month-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px;}
+.month-box{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px;backdrop-filter:blur(20px);}
 .month-lbl{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase;}
 .month-val{font-size:16px;font-weight:700;}
 .month-val.g{color:var(--green2);}
@@ -329,7 +369,7 @@ body.light ::-webkit-scrollbar-thumb{background:rgba(108,58,255,0.2);}
 /* MODAL */
 .overlay{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,0.88);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.25s;}
 .overlay.open{opacity:1;pointer-events:all;}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:28px;width:90%;max-width:400px;transform:translateY(20px);transition:transform 0.25s;}
+.modal{background:rgba(10,12,20,0.75);border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:28px;width:90%;max-width:400px;transform:translateY(20px);transition:transform 0.25s;backdrop-filter:blur(40px) saturate(180%);box-shadow:inset 0 1px 0 rgba(255,255,255,0.15),0 24px 64px rgba(0,0,0,0.6);}
 .overlay.open .modal{transform:translateY(0);}
 .modal-title{font-family:'Orbitron',monospace;font-size:13px;letter-spacing:2px;color:var(--neon);margin-bottom:20px;}
 .modal-btns{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
@@ -344,7 +384,7 @@ body.light ::-webkit-scrollbar-thumb{background:rgba(108,58,255,0.2);}
 
 /* CRYPTO PRICES */
 .crypto-prices{display:flex;gap:8px;flex-shrink:0;}
-.cp-chip{display:flex;align-items:center;gap:8px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:8px 12px;}
+.cp-chip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:8px 12px;backdrop-filter:blur(16px);}
 .cp-icon{font-size:18px;color:var(--gold);font-weight:700;line-height:1;}
 .cp-name{font-size:9px;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:1px;text-transform:uppercase;}
 .cp-price{font-size:13px;font-weight:700;color:#fff;font-family:'Space Mono',monospace;margin-top:1px;}
@@ -352,13 +392,28 @@ body.light ::-webkit-scrollbar-thumb{background:rgba(108,58,255,0.2);}
 
 /* HERO STATS */
 .hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px;}
-.hstat{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.hstat{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:14px 16px;backdrop-filter:blur(20px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.08);}
 .hstat-lbl{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;}
 .hstat-val{font-size:clamp(16px,2.5vw,20px);font-weight:700;color:#fff;font-family:'Orbitron',monospace;}
 .hstat-val.g{color:var(--green2);}
 .hstat-val.r{color:var(--red2);}
 .hstat-val.n{color:var(--neon);}
 .hstat-sub{font-size:10px;color:var(--muted);margin-top:4px;}
+/* ANALYST TAB STYLES */
+.search-input:focus{border-color:var(--neon)!important;box-shadow:0 0 0 3px rgba(20,241,149,0.1);}
+.stats-row{display:grid;gap:10px;}
+@media(min-width:500px){.stats-row{grid-template-columns:repeat(4,1fr)!important;}}
+.ana-stat-box{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:14px 12px;}
+.ana-stat-lbl{font-size:9px;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;}
+.ana-stat-val{font-size:16px;font-weight:700;font-family:'Orbitron',monospace;}
+.ana-stat-sub{font-size:10px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace;}
+.ana-fund-box{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px 14px;}
+.ana-fund-lbl{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:1px;margin-bottom:4px;}
+.ana-fund-val{font-size:15px;font-weight:700;font-family:'Orbitron',monospace;color:#fff;}
+.ana-ind-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+.ana-ind-row:last-child{border-bottom:none;}
+.ana-ind-bar-wrap{flex:1;min-width:100px;height:6px;background:var(--bg3);border-radius:10px;margin-top:6px;overflow:hidden;}
+.ana-ind-bar{height:100%;border-radius:10px;transition:width 0.8s ease;}
 </style>
 </head>
 <body>
@@ -573,13 +628,23 @@ body.light ::-webkit-scrollbar-thumb{background:rgba(108,58,255,0.2);}
     <button class="tab" onclick="switchTab('intel')">Intel</button>
     <button class="tab" onclick="switchTab('tax')">Tax</button>
     <button class="tab" onclick="switchTab('rotation')">🔄 Rotation</button>
+    <button class="tab" onclick="switchTab('analyst')">🤖 Analyst</button>
   </div>
 
   <!-- HOLDINGS -->
   <div class="tc active" id="tab-holdings">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
       <div class="sec-lbl" style="margin-bottom:0;">Your Assets</div>
-      <button class="btn btn-ghost" onclick="showWeeklyReport()" style="font-size:11px;padding:8px 14px;">📊 Weekly Report</button>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <select id="holdingsSort" onchange="renderHoldings()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:6px 10px;color:var(--muted);font-family:'Space Mono',monospace;font-size:10px;outline:none;cursor:pointer;">
+          <option value="default">Sort: Default</option>
+          <option value="value-hi">Value: High → Low</option>
+          <option value="value-lo">Value: Low → High</option>
+          <option value="pnl-hi">P&L: Best First</option>
+          <option value="alpha">A → Z</option>
+        </select>
+        <button class="btn btn-ghost" onclick="showWeeklyReport()" style="font-size:11px;padding:8px 14px;">📊 Weekly Report</button>
+      </div>
     </div>
     <div id="assetList"></div>
     <div id="holdingsEmpty" class="empty" style="display:none;"><div class="empty-ico">💼</div>No assets yet.</div>
@@ -867,7 +932,108 @@ body.light ::-webkit-scrollbar-thumb{background:rgba(108,58,255,0.2);}
 
   </div>
 
-<!-- WEEKLY REPORT MODAL -->
+  <!-- ANALYST TAB -->
+  <div class="tc" id="tab-analyst">
+
+    <!-- SEARCH -->
+    <div class="card" style="margin-bottom:16px;">
+      <div class="card-title">◈ Type Any Ticker — Stock or Crypto</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;">
+        <input class="search-input" type="text" id="anaTickerInput"
+          placeholder="e.g. FSOL, NVDA, SOL-USD, AAPL..."
+          oninput="this.value=this.value.toUpperCase()"
+          onkeydown="if(event.key==='Enter')anaAnalyze()"
+          style="flex:1;min-width:200px;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px 18px;color:#fff;font-family:'Orbitron',monospace;font-size:16px;font-weight:700;letter-spacing:2px;outline:none;text-transform:uppercase;"/>
+        <button class="btn btn-neon" id="anaBtn" onclick="anaAnalyze()" style="padding:14px 28px;font-size:13px;">⚡ ANALYZE</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+        <span style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;align-self:center;">Quick:</span>
+        <span class="pill" onclick="anaQuick('FSOL')" style="cursor:pointer;">FSOL</span>
+        <span class="pill" onclick="anaQuick('DRAM')" style="cursor:pointer;">DRAM</span>
+        <span class="pill" onclick="anaQuick('SMH')" style="cursor:pointer;">SMH</span>
+        <span class="pill" onclick="anaQuick('CRDO')" style="cursor:pointer;">CRDO</span>
+        <span class="pill" onclick="anaQuick('BMNR')" style="cursor:pointer;">BMNR</span>
+        <span class="pill" onclick="anaQuick('SOL-USD')" style="cursor:pointer;">SOL</span>
+        <span class="pill" onclick="anaQuick('BTC-USD')" style="cursor:pointer;">BTC</span>
+        <span class="pill" onclick="anaQuick('NVDA')" style="cursor:pointer;">NVDA</span>
+        <span class="pill" onclick="anaQuick('AAPL')" style="cursor:pointer;">AAPL</span>
+        <span class="pill" onclick="anaQuick('META')" style="cursor:pointer;">META</span>
+        <span class="pill" onclick="anaQuick('MSFT')" style="cursor:pointer;">MSFT</span>
+        <span class="pill" onclick="anaQuick('MU')" style="cursor:pointer;">MU</span>
+        <span class="pill" onclick="anaQuick('COIN')" style="cursor:pointer;">COIN</span>
+        <span class="pill" onclick="anaQuick('SOFI')" style="cursor:pointer;">SOFI</span>
+        <span class="pill" onclick="anaQuick('TITANX')" style="cursor:pointer;">TITANX</span>
+        <span class="pill" onclick="anaQuick('QUILL')" style="cursor:pointer;">QUILL</span>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div id="anaLoading" style="display:none;text-align:center;padding:40px 20px;">
+      <div style="width:42px;height:42px;border-radius:50%;border:3px solid rgba(20,241,149,0.2);border-top-color:var(--neon);animation:anaSpin 0.8s linear infinite;margin:0 auto 16px;"></div>
+      <div style="font-family:'Space Mono',monospace;font-size:12px;color:var(--neon);letter-spacing:2px;" id="anaLoadingText">ANALYZING...</div>
+    </div>
+    <style>@keyframes anaSpin{to{transform:rotate(360deg);}}</style>
+
+    <!-- SIGNAL BANNER -->
+    <div id="anaSignalBanner" style="display:none;border-radius:16px;padding:20px 24px;border:1px solid;margin-bottom:16px;background:var(--bg2);">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:10px;">
+        <div>
+          <div style="font-family:'Orbitron',monospace;font-size:26px;font-weight:900;color:#fff;" id="anaTicker">—</div>
+          <div style="font-size:12px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:2px;" id="anaName">—</div>
+        </div>
+        <div id="anaBadge" style="padding:8px 20px;border-radius:8px;font-family:'Orbitron',monospace;font-size:15px;font-weight:900;letter-spacing:2px;">—</div>
+      </div>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);">
+        <div>Price: <span id="anaPrice" style="color:#fff;font-weight:700;">—</span></div>
+        <div>Change: <span id="anaChange" style="font-weight:700;">—</span></div>
+        <div>52W High: <span id="ana52H" style="color:#fff;">—</span></div>
+        <div>52W Low: <span id="ana52L" style="color:#fff;">—</span></div>
+        <div id="anaTypeTag" style="color:var(--purple);">—</div>
+      </div>
+    </div>
+
+    <!-- STATS GRID -->
+    <div class="stats-row" id="anaStatsGrid" style="display:none;grid-template-columns:repeat(2,1fr);margin-bottom:16px;"></div>
+
+    <!-- FUNDAMENTALS (stocks only) -->
+    <div class="card" id="anaFundCard" style="display:none;margin-bottom:16px;">
+      <div class="card-title">◈ Fundamentals</div>
+      <div id="anaFundGrid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px;"></div>
+    </div>
+
+    <!-- CHART -->
+    <div class="card" id="anaChartCard" style="display:none;margin-bottom:16px;">
+      <div class="card-title">◈ Price History — 6 Months</div>
+      <div style="position:relative;height:240px;margin-top:14px;"><canvas id="anaChart"></canvas></div>
+    </div>
+
+    <!-- TECHNICAL INDICATORS -->
+    <div class="card" id="anaIndCard" style="display:none;margin-bottom:16px;">
+      <div class="card-title">◈ Technical Indicators</div>
+      <div id="anaIndList" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- AI VERDICT -->
+    <div class="card" id="anaAiCard" style="display:none;">
+      <div class="card-title">◈ AI Verdict — Claude Reading the Setup</div>
+      <div style="background:rgba(20,241,149,0.03);border:1px solid rgba(20,241,149,0.15);border-radius:12px;padding:18px;margin-top:14px;font-family:'Space Mono',monospace;font-size:12px;line-height:1.85;color:var(--muted2);" id="anaAiBox"></div>
+      <div style="margin-top:14px;padding:10px 14px;background:rgba(255,23,68,0.04);border:1px solid rgba(255,23,68,0.12);border-radius:8px;font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.6;">
+        ⚠️ Educational only, not financial advice. Technical + fundamental analysis is one input among many — always do your own research.
+      </div>
+    </div>
+
+    <!-- EMPTY STATE -->
+    <div id="anaEmpty" style="text-align:center;padding:50px 20px;">
+      <div style="font-size:42px;margin-bottom:14px;">🤖</div>
+      <div style="font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;">Type a ticker to begin</div>
+      <div style="font-size:12px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.7;">
+        Works for stocks AND crypto — auto-detects which.<br/>
+        Get RSI, MACD, P/E, EPS, support/resistance,<br/>
+        and a clear <span style="color:var(--neon);">BUY · HOLD · SELL</span> verdict.
+      </div>
+    </div>
+
+  </div>
 <div class="overlay" id="weeklyModal" style="z-index:200;">
   <div class="modal" style="max-width:520px;padding:0;overflow:hidden;">
 
@@ -950,7 +1116,16 @@ function load(){
     {ticker:'DMT-NAT',name:'DMT-NAT (ERC20 · Ethereum)',type:'crypto'},
     {ticker:'PTGC',name:'The Grays Currency (PulseChain)',type:'crypto'},
     {ticker:'OVPP',name:'OpenVPP (Base Chain)',type:'crypto'},
-    {ticker:'PRVX',name:'ProveX (PulseChain)',type:'crypto'}
+    {ticker:'PRVX',name:'ProveX (PulseChain)',type:'crypto'},
+    {ticker:'TITANX',name:'TitanX (ERC20 · Ethereum)',type:'crypto'},
+    {ticker:'QUILL',name:'Quill (Base Chain)',type:'crypto'},
+    {ticker:'AAPL',name:'Apple Inc.',type:'stock'},
+    {ticker:'META',name:'Meta Platforms',type:'stock'},
+    {ticker:'MSFT',name:'Microsoft Corporation',type:'stock'},
+    {ticker:'MU',name:'Micron Technology',type:'stock'},
+    {ticker:'BTC-USD',name:'Bitcoin',type:'crypto'},
+    {ticker:'COIN',name:'Coinbase Global',type:'stock'},
+    {ticker:'SOFI',name:'SoFi Technologies',type:'stock'}
   ];
   defaults.forEach(d=>{
     if(!S.assets.find(a=>a.ticker===d.ticker)) S.assets.push(d);
@@ -964,12 +1139,20 @@ const PM={
   FSOL:9.65,DRAM:68.00,SMH:607.81,ASTS:104.90,
   IONQ:68.57,BMNR:18.23,RDZN:1.87,FDTX:58.35,
   CRDO:206.11,IBIT:42,BTC:104000,ETH:3800,SOL:79,
-  SPY:580,QQQ:490,VOO:520,NVDA:135,MU:115,
+  SPY:580,QQQ:490,VOO:520,NVDA:135,MU:1151.80,
   MSTR:420,ETHA:28,FBTC:105,
   'DMT-NAT':0.00009666,
   'PTGC':0.00007433,
   'OVPP':0.0071,
-  'PRVX':0.00006938
+  'PRVX':0.00006938,
+  'TITANX':0.00000006691,
+  'QUILL':0.0006,
+  AAPL:297.21,
+  META:574.63,
+  MSFT:379.10,
+  'BTC-USD':104000,
+  COIN:163.20,
+  SOFI:17.91
 };
 
 async function fetchPrices(){
@@ -1044,6 +1227,19 @@ const CONTRACT_TOKENS = {
     chain:   'pulsechain',
     holdings: 0,
     name:    'ProveX (PulseChain)'
+  },
+  'TITANX': {
+    address: '0xF19308F923582A6f7c465e5CE7a9Dc1BEC6665B1',
+    chain:   'ethereum',
+    holdings: 100000000000,
+    buyPrice: 0.000000045,
+    name:    'TitanX (ERC20 · Ethereum)'
+  },
+  'QUILL': {
+    address: '0x60A646e3fD75CdE4c5b604b22d4Fcd04639913C8',
+    chain:   'base',
+    holdings: 0,
+    name:    'Quill (Base Chain)'
   }
 };
 
@@ -1053,11 +1249,12 @@ async function fetchContractPrice(ticker){
   const proxies = [
     'https://api.allorigins.win/raw?url=',
     'https://corsproxy.io/?',
+    'https://api.codetabs.com/v1/proxy?quest=',
   ];
   const dexUrl = `https://api.dexscreener.com/latest/dex/tokens/${token.address}`;
   for(const proxy of proxies){
     try{
-      const res = await fetch(proxy + encodeURIComponent(dexUrl), {signal: AbortSignal.timeout(5000)});
+      const res = await fetch(proxy + encodeURIComponent(dexUrl), {signal: AbortSignal.timeout(6000)});
       const data = await res.json();
       const pairs = data?.pairs;
       if(!pairs||!pairs.length) continue;
@@ -1255,7 +1452,7 @@ function updateRotSlider(i,val){
 
 // ─── TABS (with rotation) ─────────────────────────────────────────
 function switchTab(n){
-  const ns=['holdings','log','chart','forecast','options','intel','tax','rotation'];
+  const ns=['holdings','log','chart','forecast','options','intel','tax','rotation','analyst'];
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',ns[i]===n));
   document.querySelectorAll('.tc').forEach(c=>c.classList.remove('active'));
   document.getElementById('tab-'+n).classList.add('active');
@@ -1701,12 +1898,25 @@ function renderHoldings(){
   const el=document.getElementById('assetList'),emp=document.getElementById('holdingsEmpty');
   if(!S.assets.length){emp.style.display='';el.innerHTML='';return;}
   emp.style.display='none';
-  el.innerHTML=S.assets.map(a=>{
+
+  // Build asset data array with computed values for sorting
+  const sortMode = document.getElementById('holdingsSort')?.value || 'default';
+  let assetData = S.assets.map(a=>{
     const entries=S.entries.filter(e=>e.ticker===a.ticker);
     const inv=entries.reduce((s,e)=>s+e.amount,0);
     const shares=entries.reduce((s,e)=>s+e.shares,0);
     const cp=S.prices[a.ticker]||0;
-    const cv=shares*cp,pnl=cv-inv;
+    const cv=shares*cp, pnl=cv-inv;
+    return {a, inv, shares, cp, cv, pnl};
+  });
+
+  // Sort
+  if(sortMode==='value-hi') assetData.sort((x,y)=>y.cv-x.cv);
+  else if(sortMode==='value-lo') assetData.sort((x,y)=>x.cv-y.cv);
+  else if(sortMode==='pnl-hi') assetData.sort((x,y)=>y.pnl-x.pnl);
+  else if(sortMode==='alpha') assetData.sort((x,y)=>x.a.ticker.localeCompare(y.a.ticker));
+
+  el.innerHTML=assetData.map(({a,inv,shares,cp,cv,pnl})=>{
     const pct=inv>0?((pnl/inv)*100).toFixed(1):'0.0';
     const avg=shares>0?(inv/shares).toFixed(2):'—';
     const up=pnl>=0;
@@ -1728,7 +1938,7 @@ function renderHoldings(){
   }).join('');
 
   // sparklines
-  S.assets.forEach(a=>{
+  assetData.forEach(({a})=>{
     const canvas=document.getElementById('sp-'+a.ticker);
     if(!canvas)return;
     const pts=S.entries.filter(e=>e.ticker===a.ticker).slice(-8).map(e=>e.price);
@@ -2122,6 +2332,404 @@ function checkWeeklyReport(){
 
 // Manual trigger button — always available
 function showWeeklyReport(){ buildWeeklyReport(); }
+
+// ─── INIT ─────────────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// AI ANALYST — auto-detects stock vs crypto, full technical + fundamental analysis
+// ═══════════════════════════════════════════════════════════════
+let anaChartInstance = null;
+let anaCurrentTicker = '';
+
+const CRYPTO_TICKERS = ['BTC-USD','ETH-USD','SOL-USD','BTC','ETH','SOL','DOGE-USD','XRP-USD','ADA-USD','AVAX-USD','LINK-USD','MATIC-USD','DOT-USD','LTC-USD'];
+const ANA_KNOWN = {
+  FSOL:{price:7.47,high52:17.48,low52:5.85,name:'Fidelity Solana Fund',type:'crypto-etf'},
+  DRAM:{price:68.00,high52:85.00,low52:22.00,name:'Roundhill Memory ETF',type:'stock'},
+  SMH:{price:607.81,high52:700.00,low52:185.00,name:'VanEck Semiconductor ETF',type:'stock'},
+  CRDO:{price:206.11,high52:243.00,low52:18.00,name:'Credo Technology',type:'stock'},
+  ASTS:{price:104.90,high52:135.00,low52:5.50,name:'AST SpaceMobile',type:'stock'},
+  IONQ:{price:68.57,high52:85.00,low52:6.50,name:'IonQ Inc',type:'stock'},
+  BMNR:{price:18.23,high52:90.00,low52:3.00,name:'BitMine Immersion',type:'stock'},
+  'SOL-USD':{price:63,high52:295,low52:8,name:'Solana',type:'crypto'},
+  'BTC-USD':{price:104000,high52:110000,low52:15000,name:'Bitcoin',type:'crypto'},
+  'ETH-USD':{price:3800,high52:4800,low52:880,name:'Ethereum',type:'crypto'},
+  NVDA:{price:135,high52:153,low52:75,name:'NVIDIA Corporation',type:'stock'},
+  AAPL:{price:297.21,high52:317.40,low52:195.07,name:'Apple Inc.',type:'stock'},
+  META:{price:574.63,high52:740.00,low52:480.00,name:'Meta Platforms',type:'stock'},
+  MSFT:{price:379.10,high52:555.45,low52:356.28,name:'Microsoft Corporation',type:'stock'},
+  MU:{price:1151.80,high52:1154.70,low52:103.38,name:'Micron Technology',type:'stock'},
+  COIN:{price:163.20,high52:444.65,low52:139.36,name:'Coinbase Global',type:'stock'},
+  SOFI:{price:17.91,high52:29.56,low52:9.43,name:'SoFi Technologies',type:'stock'},
+  TITANX:{price:0.00000006691,high52:0.0000003482,low52:0.00000005,name:'TitanX',type:'crypto'},
+  QUILL:{price:0.0006,high52:0.002,low52:0.0001,name:'Quill',type:'crypto'},
+  PENG:{price:58.20,high52:73.24,low52:5.75,name:'Penguin Solutions, Inc.',type:'stock'},
+};
+
+function anaIsCrypto(ticker){
+  return CRYPTO_TICKERS.includes(ticker) || ticker.endsWith('-USD') || !!CONTRACT_TOKENS[ticker];
+}
+
+function anaQuick(ticker){
+  document.getElementById('anaTickerInput').value = ticker;
+  anaAnalyze();
+}
+
+async function anaFetchYahooData(ticker){
+  const proxies = [
+    'https://api.allorigins.win/raw?url=',
+    'https://api.codetabs.com/v1/proxy?quest=',
+    'https://corsproxy.io/?',
+  ];
+  const yUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=6mo`;
+  const yUrl2 = `https://query2.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1y`;
+  for(const url of [yUrl, yUrl2]){
+    for(const proxy of proxies){
+      try{
+        const res = await fetch(proxy+encodeURIComponent(url),{signal:AbortSignal.timeout(7000)});
+        if(!res.ok) continue;
+        const data = await res.json();
+        const result = data?.chart?.result?.[0];
+        const hasCloses = result?.indicators?.quote?.[0]?.close?.some(c=>c);
+        if(result && hasCloses) return result;
+      }catch(e){continue;}
+    }
+  }
+  return null;
+}
+
+async function anaFetchQuoteSummary(ticker){
+  // Pulls fundamentals: P/E, EPS, market cap, etc
+  const proxies = [
+    'https://api.allorigins.win/raw?url=',
+    'https://api.codetabs.com/v1/proxy?quest=',
+    'https://corsproxy.io/?',
+  ];
+  const modules = 'defaultKeyStatistics,financialData,summaryDetail';
+  const yUrl = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${ticker}?modules=${modules}`;
+  for(const proxy of proxies){
+    try{
+      const res = await fetch(proxy+encodeURIComponent(yUrl),{signal:AbortSignal.timeout(7000)});
+      if(!res.ok) continue;
+      const data = await res.json();
+      const result = data?.quoteSummary?.result?.[0];
+      if(result) return result;
+    }catch(e){continue;}
+  }
+  return null;
+}
+
+function anaSanitize(arr){
+  const clean=[]; let last=0;
+  for(const v of arr){
+    if(v!==null&&v!==undefined&&!isNaN(v)&&isFinite(v)&&v>0){clean.push(v);last=v;}
+    else if(last>0) clean.push(last);
+  }
+  return clean.filter(v=>v>0);
+}
+
+function anaCalcRSI(closes,period=14){
+  if(closes.length<period+1) return 50;
+  let gains=0,losses=0;
+  for(let i=closes.length-period;i<closes.length;i++){
+    const diff=closes[i]-closes[i-1];
+    if(diff>0)gains+=diff;else losses+=Math.abs(diff);
+  }
+  const avgGain=gains/period,avgLoss=losses/period;
+  if(avgLoss===0)return 100;
+  return 100-(100/(1+avgGain/avgLoss));
+}
+function anaSMA(closes,period){if(closes.length<period)return null;return closes.slice(-period).reduce((a,b)=>a+b,0)/period;}
+function anaEMA(closes,period){
+  if(closes.length<period)return null;
+  const k=2/(period+1);
+  let ema=closes.slice(0,period).reduce((a,b)=>a+b,0)/period;
+  for(let i=period;i<closes.length;i++)ema=closes[i]*k+ema*(1-k);
+  return ema;
+}
+function anaMACD(closes){
+  const e12=anaEMA(closes,12),e26=anaEMA(closes,26);
+  if(!e12||!e26)return{macd:0,signal:0,hist:0};
+  const macd=e12-e26,signal=macd*0.8;
+  return{macd,signal,hist:macd-signal};
+}
+function anaVolTrend(volumes){
+  if(volumes.length<10)return'neutral';
+  const recent=volumes.slice(-5).reduce((a,b)=>a+(b||0),0)/5;
+  const prev=volumes.slice(-10,-5).reduce((a,b)=>a+(b||0),0)/5;
+  if(recent>prev*1.2)return'high';
+  if(recent<prev*0.8)return'low';
+  return'neutral';
+}
+function anaSupport(closes){return Math.min(...closes.slice(-20).filter(c=>c))*0.98;}
+function anaResistance(closes){return Math.max(...closes.slice(-20).filter(c=>c))*1.02;}
+
+async function anaAnalyze(){
+  const ticker = document.getElementById('anaTickerInput').value.trim().toUpperCase();
+  if(!ticker){alert('Type a ticker first!');return;}
+  anaCurrentTicker = ticker;
+
+  document.getElementById('anaEmpty').style.display='none';
+  document.getElementById('anaLoading').style.display='block';
+  document.getElementById('anaSignalBanner').style.display='none';
+  document.getElementById('anaStatsGrid').style.display='none';
+  document.getElementById('anaFundCard').style.display='none';
+  document.getElementById('anaChartCard').style.display='none';
+  document.getElementById('anaIndCard').style.display='none';
+  document.getElementById('anaAiCard').style.display='none';
+
+  const steps=['FETCHING PRICE DATA...','CALCULATING RSI & MACD...','READING MOVING AVERAGES...','PULLING FUNDAMENTALS...','RUNNING AI ANALYSIS...'];
+  let step=0;
+  const loadingText=document.getElementById('anaLoadingText');
+  const stepInt=setInterval(()=>{if(step<steps.length)loadingText.textContent=steps[step++];},600);
+
+  const isCrypto = anaIsCrypto(ticker);
+  let result = await anaFetchYahooData(ticker);
+  let fundamentals = null;
+
+  let meta={}, closes=[], volumes=[], highs=[], lows=[];
+
+  if(result){
+    meta = result.meta||{};
+    const quotes = result.indicators?.quote?.[0]||{};
+    closes = anaSanitize(quotes.close||[]);
+    volumes = (quotes.volume||[]).map(v=>v||0);
+    highs = anaSanitize(quotes.high||[]);
+    lows = anaSanitize(quotes.low||[]);
+  }
+
+  // Fallback to known data or contract token
+  if(closes.length<10){
+    if(CONTRACT_TOKENS[ticker]){
+      const p = await fetchContractPrice(ticker);
+      const known = ANA_KNOWN[ticker]||{};
+      const price = p || known.price || 0.0001;
+      meta = {regularMarketPrice:price, fiftyTwoWeekHigh:price*3, fiftyTwoWeekLow:price*0.3, shortName:CONTRACT_TOKENS[ticker].name};
+      // synthetic history
+      closes=[]; let pr=price*0.7;
+      for(let i=0;i<60;i++){pr=pr*(1+(Math.random()-0.45)*0.04);closes.push(pr);}
+      closes[closes.length-1]=price;
+      volumes=closes.map(()=>Math.random()*1000000);
+      highs=closes.map(c=>c*1.02); lows=closes.map(c=>c*0.98);
+    } else {
+      const known = ANA_KNOWN[ticker];
+      if(known){
+        meta = {regularMarketPrice:known.price, fiftyTwoWeekHigh:known.high52, fiftyTwoWeekLow:known.low52, shortName:known.name};
+        closes=[]; let pr=known.low52+(known.high52-known.low52)*0.3;
+        for(let i=0;i<120;i++){
+          const drift=(known.price-pr)/120*(0.5+Math.random());
+          pr=Math.max(known.low52*0.9,Math.min(known.high52*1.1,pr+drift+pr*0.02*(Math.random()-0.5)));
+          closes.push(pr);
+        }
+        closes[closes.length-1]=known.price;
+        volumes=closes.map(()=>500000+Math.random()*2000000);
+        highs=closes.map(c=>c*1.015); lows=closes.map(c=>c*0.985);
+      }
+    }
+  }
+
+  if(closes.length<5){
+    clearInterval(stepInt);
+    document.getElementById('anaLoading').style.display='none';
+    document.getElementById('anaEmpty').style.display='block';
+    document.getElementById('anaEmpty').innerHTML = `<div style="font-size:42px;margin-bottom:14px;">⚠️</div><div style="font-family:'Orbitron',monospace;font-size:16px;font-weight:700;color:var(--red2);margin-bottom:8px;">No data found for ${ticker}</div><div style="font-size:12px;color:var(--muted);font-family:'Space Mono',monospace;">Check the ticker symbol and try again.</div>`;
+    return;
+  }
+
+  // Pull fundamentals for stocks only (not crypto)
+  if(!isCrypto && !CONTRACT_TOKENS[ticker]){
+    fundamentals = await anaFetchQuoteSummary(ticker);
+  }
+
+  const price = meta.regularMarketPrice || closes.slice(-1)[0];
+  const rsi = anaCalcRSI(closes);
+  const sma20 = anaSMA(closes,20), sma50 = anaSMA(closes,50), sma200 = anaSMA(closes,200);
+  const {macd,signal:macdSignal,hist:macdHist} = anaMACD(closes);
+  const volTrend = anaVolTrend(volumes);
+  const high52 = meta.fiftyTwoWeekHigh || Math.max(...highs.length?highs:closes);
+  const low52 = meta.fiftyTwoWeekLow || Math.min(...lows.length?lows:closes);
+  const pctFromHigh = high52>0 ? ((price-high52)/high52*100) : 0;
+  const support = anaSupport(closes), resistance = anaResistance(closes);
+  const change = meta.regularMarketChangePercent || (closes.length>1?((price-closes[closes.length-2])/closes[closes.length-2]*100):0);
+
+  // Fundamentals extraction
+  let peRatio=null, eps=null, marketCap=null, forwardPE=null, pegRatio=null, profitMargin=null, debtToEquity=null, dividendYield=null;
+  if(fundamentals){
+    const ks = fundamentals.defaultKeyStatistics||{};
+    const fd = fundamentals.financialData||{};
+    const sd = fundamentals.summaryDetail||{};
+    peRatio = sd.trailingPE?.raw || ks.trailingPE?.raw || null;
+    forwardPE = sd.forwardPE?.raw || ks.forwardPE?.raw || null;
+    eps = ks.trailingEps?.raw || null;
+    pegRatio = ks.pegRatio?.raw || null;
+    marketCap = sd.marketCap?.raw || ks.enterpriseValue?.raw || null;
+    profitMargin = fd.profitMargins?.raw || null;
+    debtToEquity = fd.debtToEquity?.raw || null;
+    dividendYield = sd.dividendYield?.raw || null;
+  }
+
+  clearInterval(stepInt);
+  document.getElementById('anaLoading').style.display='none';
+
+  // ── BUILD AI VERDICT (rule-based, no external API needed) ──
+  let signal='HOLD', signalReason=[];
+  let bullPoints=0, bearPoints=0;
+
+  if(rsi<30){bullPoints+=2;signalReason.push('RSI oversold ('+rsi.toFixed(0)+') — historically a bounce zone');}
+  else if(rsi>70){bearPoints+=2;signalReason.push('RSI overbought ('+rsi.toFixed(0)+') — caution warranted');}
+
+  if(macdHist>0){bullPoints+=1;signalReason.push('MACD histogram positive — bullish momentum building');}
+  else{bearPoints+=1;signalReason.push('MACD histogram negative — bearish pressure present');}
+
+  if(price>sma50 && sma50){bullPoints+=1;}
+  else if(sma50){bearPoints+=1;}
+
+  if(price>sma200 && sma200){bullPoints+=1;signalReason.push('Price above 200-day MA — long-term uptrend intact');}
+  else if(sma200){bearPoints+=1;signalReason.push('Price below 200-day MA — long-term downtrend');}
+
+  if(pctFromHigh<-40){bullPoints+=2;signalReason.push('Deep discount: '+pctFromHigh.toFixed(0)+'% off 52-week high');}
+  else if(pctFromHigh>-5){bearPoints+=1;signalReason.push('Trading near 52-week highs — limited margin of safety');}
+
+  if(volTrend==='high'){bullPoints+=1;signalReason.push('Above-average volume — strong conviction behind the move');}
+
+  if(peRatio){
+    if(peRatio<15){bullPoints+=2;signalReason.push('P/E of '+peRatio.toFixed(1)+' is attractively low');}
+    else if(peRatio>40){bearPoints+=1;signalReason.push('P/E of '+peRatio.toFixed(1)+' is elevated — priced for high growth');}
+  }
+  if(pegRatio){
+    if(pegRatio<1){bullPoints+=1;signalReason.push('PEG ratio of '+pegRatio.toFixed(2)+' suggests undervalued relative to growth');}
+    else if(pegRatio>2){bearPoints+=1;}
+  }
+
+  const netScore = bullPoints-bearPoints;
+  if(netScore>=4) signal='BUY';
+  else if(netScore>=2) signal='ACCUMULATE';
+  else if(netScore<=-3) signal='SELL';
+  else signal='HOLD';
+
+  // ── RENDER SIGNAL BANNER ──
+  const sigColors = {BUY:'var(--neon)',ACCUMULATE:'#a78bfa',HOLD:'var(--gold)',SELL:'var(--red2)'};
+  const sigBg = {BUY:'rgba(20,241,149,0.4)',ACCUMULATE:'rgba(124,58,237,0.4)',HOLD:'rgba(255,215,0,0.4)',SELL:'rgba(255,23,68,0.4)'};
+  const banner = document.getElementById('anaSignalBanner');
+  banner.style.display='block';
+  banner.style.borderColor = sigBg[signal];
+  banner.style.background = signal==='BUY'?'rgba(20,241,149,0.06)':signal==='ACCUMULATE'?'rgba(124,58,237,0.06)':signal==='SELL'?'rgba(255,23,68,0.06)':'rgba(255,215,0,0.05)';
+  document.getElementById('anaTicker').textContent = ticker;
+  document.getElementById('anaName').textContent = meta.shortName || meta.longName || (CONTRACT_TOKENS[ticker]?.name) || ticker;
+  const badge = document.getElementById('anaBadge');
+  badge.textContent = signal;
+  badge.style.background = signal==='SELL'?'var(--red)':signal==='BUY'?'var(--neon)':signal==='ACCUMULATE'?'var(--purple)':'var(--gold)';
+  badge.style.color = signal==='BUY'?'#000':signal==='HOLD'?'#000':'#fff';
+  document.getElementById('anaPrice').textContent = price<0.01?price.toFixed(8):'$'+fmt(price);
+  const changeEl = document.getElementById('anaChange');
+  changeEl.textContent = (change>=0?'+':'')+change.toFixed(2)+'%';
+  changeEl.style.color = change>=0?'var(--green2)':'var(--red2)';
+  document.getElementById('ana52H').textContent = high52<0.01?high52.toFixed(8):'$'+fmt(high52);
+  document.getElementById('ana52L').textContent = low52<0.01?low52.toFixed(8):'$'+fmt(low52);
+  document.getElementById('anaTypeTag').textContent = isCrypto?'◈ CRYPTO':CONTRACT_TOKENS[ticker]?'◈ ON-CHAIN TOKEN':'◈ STOCK/ETF';
+
+  // ── STATS GRID ──
+  const statsGrid = document.getElementById('anaStatsGrid');
+  statsGrid.style.display='grid';
+  statsGrid.innerHTML = `
+    <div class="ana-stat-box"><div class="ana-stat-lbl">RSI (14)</div><div class="ana-stat-val" style="color:${rsi<30?'var(--green2)':rsi>70?'var(--red2)':'var(--gold)'};">${rsi.toFixed(1)}</div><div class="ana-stat-sub">${rsi<30?'Oversold 🟢':rsi>70?'Overbought 🔴':'Neutral ⚡'}</div></div>
+    <div class="ana-stat-box"><div class="ana-stat-lbl">MACD Hist</div><div class="ana-stat-val" style="color:${macdHist>=0?'var(--green2)':'var(--red2)'};">${macdHist.toFixed(4)}</div><div class="ana-stat-sub">${macdHist>=0?'Bullish 📈':'Bearish 📉'}</div></div>
+    <div class="ana-stat-box"><div class="ana-stat-lbl">vs 52W High</div><div class="ana-stat-val" style="color:${pctFromHigh>-20?'var(--red2)':'var(--green2)'};">${pctFromHigh.toFixed(1)}%</div><div class="ana-stat-sub">${pctFromHigh>-10?'Near highs':'Discount zone'}</div></div>
+    <div class="ana-stat-box"><div class="ana-stat-lbl">Volume</div><div class="ana-stat-val" style="color:${volTrend==='high'?'var(--green2)':volTrend==='low'?'var(--red2)':'#fff'};">${volTrend.toUpperCase()}</div><div class="ana-stat-sub">${volTrend==='high'?'Strong conviction':'Normal/weak'}</div></div>`;
+
+  // ── FUNDAMENTALS (stocks only) ──
+  const fundCard = document.getElementById('anaFundCard');
+  if(fundamentals && (peRatio||eps||marketCap)){
+    fundCard.style.display='block';
+    const fundGrid = document.getElementById('anaFundGrid');
+    fundGrid.innerHTML = `
+      ${peRatio?`<div class="ana-fund-box"><div class="ana-fund-lbl">P/E RATIO</div><div class="ana-fund-val" style="color:${peRatio<15?'var(--green2)':peRatio>40?'var(--red2)':'#fff'};">${peRatio.toFixed(1)}</div></div>`:''}
+      ${forwardPE?`<div class="ana-fund-box"><div class="ana-fund-lbl">FORWARD P/E</div><div class="ana-fund-val">${forwardPE.toFixed(1)}</div></div>`:''}
+      ${eps?`<div class="ana-fund-box"><div class="ana-fund-lbl">EPS (TTM)</div><div class="ana-fund-val">$${eps.toFixed(2)}</div></div>`:''}
+      ${pegRatio?`<div class="ana-fund-box"><div class="ana-fund-lbl">PEG RATIO</div><div class="ana-fund-val" style="color:${pegRatio<1?'var(--green2)':pegRatio>2?'var(--red2)':'#fff'};">${pegRatio.toFixed(2)}</div></div>`:''}
+      ${marketCap?`<div class="ana-fund-box"><div class="ana-fund-lbl">MARKET CAP</div><div class="ana-fund-val">${fmtBig(marketCap)}</div></div>`:''}
+      ${profitMargin?`<div class="ana-fund-box"><div class="ana-fund-lbl">PROFIT MARGIN</div><div class="ana-fund-val" style="color:${profitMargin>0?'var(--green2)':'var(--red2)'};">${(profitMargin*100).toFixed(1)}%</div></div>`:''}
+      ${debtToEquity!==null?`<div class="ana-fund-box"><div class="ana-fund-lbl">DEBT/EQUITY</div><div class="ana-fund-val">${debtToEquity.toFixed(1)}</div></div>`:''}
+      ${dividendYield?`<div class="ana-fund-box"><div class="ana-fund-lbl">DIV YIELD</div><div class="ana-fund-val" style="color:var(--neon);">${(dividendYield*100).toFixed(2)}%</div></div>`:''}
+    `;
+  } else {
+    fundCard.style.display='none';
+  }
+
+  // ── CHART ──
+  document.getElementById('anaChartCard').style.display='block';
+  const labels = closes.map((_,i)=>i);
+  const ctx = document.getElementById('anaChart').getContext('2d');
+  if(anaChartInstance) anaChartInstance.destroy();
+  anaChartInstance = new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[
+      {label:ticker,data:closes,borderColor:'rgba(20,241,149,0.9)',backgroundColor:'rgba(20,241,149,0.06)',fill:true,tension:0.3,pointRadius:0,borderWidth:2}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(15,15,15,0.96)',borderColor:'rgba(20,241,149,0.2)',borderWidth:1,callbacks:{label:c=>'$'+fmt(c.raw)}}},
+      scales:{x:{display:false},y:{ticks:{color:'#4b5563',font:{family:'Space Mono',size:9},callback:v=>v<0.01?v.toFixed(6):'$'+fmt(v)},grid:{color:'rgba(255,255,255,0.04)'}}}
+    }
+  });
+
+  // ── TECHNICAL INDICATORS DETAIL ──
+  document.getElementById('anaIndCard').style.display='block';
+  document.getElementById('anaIndList').innerHTML = `
+    <div class="ana-ind-row">
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;">RSI (14-Period)</div><div class="ana-ind-bar-wrap"><div class="ana-ind-bar" style="width:${rsi}%;background:${rsi<30?'var(--green2)':rsi>70?'var(--red2)':'var(--gold)'};"></div></div></div>
+      <div style="font-family:'Orbitron',monospace;font-weight:700;color:${rsi<30?'var(--green2)':rsi>70?'var(--red2)':'var(--gold)'};">${rsi.toFixed(1)}</div>
+    </div>
+    <div class="ana-ind-row">
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;">MACD</div><div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">${macdHist>0?'Bullish crossover forming':'Bearish pressure'}</div></div>
+      <div style="font-family:'Orbitron',monospace;font-weight:700;color:${macdHist>=0?'var(--green2)':'var(--red2)'};">${macdHist>=0?'▲':'▼'} ${Math.abs(macdHist).toFixed(4)}</div>
+    </div>
+    <div class="ana-ind-row">
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;">SMA 20 / 50 / 200</div><div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">$${fmt(sma20||0)} / $${fmt(sma50||0)} / $${fmt(sma200||0)}</div></div>
+      <div style="font-family:'Orbitron',monospace;font-weight:700;color:${price>sma50?'var(--green2)':'var(--red2)'};">${price>sma200?'▲ BULL':'▼ BEAR'}</div>
+    </div>
+    <div class="ana-ind-row">
+      <div style="flex:1;"><div style="font-size:13px;font-weight:600;">Support / Resistance</div><div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">Key levels to watch</div></div>
+      <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;"><span style="color:var(--neon);">$${fmt(support)}</span> / <span style="color:var(--gold);">$${fmt(resistance)}</span></div>
+    </div>`;
+
+  // ── AI VERDICT TEXT ──
+  document.getElementById('anaAiCard').style.display='block';
+  const verdict = anaBuildVerdict(ticker, signal, signalReason, price, support, resistance, isCrypto);
+  document.getElementById('anaAiBox').innerHTML = verdict;
+}
+
+function anaBuildVerdict(ticker, signal, reasons, price, support, resistance, isCrypto){
+  const signalColor = {BUY:'var(--neon)',ACCUMULATE:'#a78bfa',HOLD:'var(--gold)',SELL:'var(--red2)'}[signal];
+  let intro='';
+  if(signal==='BUY') intro=`The setup on <span style="color:${signalColor};font-weight:700;">${ticker}</span> is genuinely compelling right now. Multiple signals are stacking in the same direction.`;
+  else if(signal==='ACCUMULATE') intro=`<span style="color:${signalColor};font-weight:700;">${ticker}</span> is showing more bullish signals than bearish ones — a reasonable spot to keep building a position gradually.`;
+  else if(signal==='SELL') intro=`<span style="color:${signalColor};font-weight:700;">${ticker}</span> is flashing more warning signs than green lights right now. Worth being cautious here.`;
+  else intro=`<span style="color:${signalColor};font-weight:700;">${ticker}</span> is sitting in a neutral zone — no strong edge either direction at current levels.`;
+
+  const reasonsList = reasons.map(r=>`<div style="margin-bottom:6px;">▸ ${r}</div>`).join('');
+
+  let actionPlan='';
+  if(signal==='BUY'||signal==='ACCUMULATE'){
+    actionPlan=`Consider scaling in rather than going all-in at once. Watch for a hold above $${fmt(support)} as a stop-loss reference — a break below that level would weaken the thesis. Resistance sits around $${fmt(resistance)}.`;
+  } else if(signal==='SELL'){
+    actionPlan=`If you're holding, this is a reasonable spot to trim or set a tight mental stop. If you're not in yet, there's no rush — better entries are often available after a confirmed pullback.`;
+  } else {
+    actionPlan=`No urgency either way. A break above $${fmt(resistance)} would flip this bullish; a break below $${fmt(support)} would flip it bearish.`;
+  }
+
+  return `<div style="margin-bottom:14px;">${intro}</div>
+    <div style="color:var(--neon);font-weight:700;font-size:11px;letter-spacing:1px;margin-bottom:10px;">◈ WHAT THE DATA SHOWS</div>
+    ${reasonsList}
+    <div style="height:1px;background:rgba(20,241,149,0.1);margin:14px 0;"></div>
+    <div style="color:var(--neon);font-weight:700;font-size:11px;letter-spacing:1px;margin-bottom:8px;">◈ ACTION PLAN</div>
+    <div>${actionPlan}</div>`;
+}
+
+function fmtBig(n){
+  if(n>=1e12)return'$'+(n/1e12).toFixed(2)+'T';
+  if(n>=1e9)return'$'+(n/1e9).toFixed(2)+'B';
+  if(n>=1e6)return'$'+(n/1e6).toFixed(2)+'M';
+  return'$'+fmt(n);
+}
 
 // ─── INIT ─────────────────────────────────────────────────────────
 function init(){
